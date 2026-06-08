@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="personregistration.client/personregistration.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="PersonRegistration.Server/PersonRegistration.Server.csproj" />
+</Solution>
