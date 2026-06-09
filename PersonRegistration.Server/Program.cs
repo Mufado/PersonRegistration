@@ -45,6 +45,12 @@ builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    DbSeeder.Seed(context);
+}
+
 app.UseExceptionHandler();
 
 app.UseDefaultFiles();
