@@ -16,13 +16,11 @@ public static class CpfValidator
         if (digits.Distinct().Count() == 1)
             return false;
 
-        // 1º dígito verificador: pesos 10..2 sobre os 9 primeiros dígitos
         var firstCheck = CalculateCheckDigit(digits, length: 9, startWeight: 10);
 
         if (firstCheck != digits[9] - '0')
             return false;
 
-        // 2º dígito verificador: pesos 11..2 sobre os 10 primeiros dígitos
         var secondCheck = CalculateCheckDigit(digits, length: 10, startWeight: 11);
 
         if (secondCheck != digits[10] - '0')
