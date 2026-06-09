@@ -19,6 +19,7 @@ public class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider)
 
     public void Configure(SwaggerGenOptions options)
     {
+        // Register a Swagger document for each discovered API version
         foreach (var description in _provider.ApiVersionDescriptions)
         {
             options.SwaggerDoc(
