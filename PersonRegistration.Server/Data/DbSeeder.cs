@@ -1,10 +1,17 @@
-﻿using PersonRegistration.Server.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using PersonRegistration.Server.Models;
 
 namespace PersonRegistration.Server.Data;
 
 public static class DbSeeder
 {
-    public static void Seed(AppDbContext context)
+    public static void Seed(AppDbContext context, IPasswordHasher<User> passwordHasher)
+    {
+        SeedPeople(context);
+        SeedUsers(context, passwordHasher);
+    }
+
+    private static void SeedPeople(AppDbContext context)
     {
         if (context.People.Any())
             return;
@@ -12,29 +19,23 @@ public static class DbSeeder
         var now = DateTime.UtcNow;
 
         context.People.AddRange(
-            new Person
-            {
-                Name = "Ana Souza",
-                Cpf = "11144477735",
-                BirthDate = new DateOnly(1990, 5, 12),
-                Gender = "Feminino",
-                Email = "ana@exemplo.com",
-                BirthPlace = "Fortaleza",
-                Nationality = "Brasileira",
-                CreatedAt = now,
-                UpdatedAt = now
-            },
-            new Person
-            {
-                Name = "Bruno Lima",
-                Cpf = "52998224725",
-                BirthDate = new DateOnly(1985, 11, 3),
-                Email = "bruno@exemplo.com",
-                Nationality = "Brasileira",
-                CreatedAt = now,
-                UpdatedAt = now
-            }
+            new Person { Name = "Ana Souza", Cpf = "11144477735", BirthDate = new DateOnly(1990, 5, 12), Gender = "Feminino", Email = "ana@exemplo.com", BirthPlace = "Fortaleza", Nationality = "Brasileira", CreatedAt = now, UpdatedAt = now },
+            new Person { Name = "Bruno Lima", Cpf = "52998224725", BirthDate = new DateOnly(1985, 11, 3), Email = "bruno@exemplo.com", Nationality = "Brasileira", CreatedAt = now, UpdatedAt = now }
         );
+
+        context.SaveChanges();
+    }
+
+    private static void SeedUsers(AppDbContext context, IPasswordHasher<User> passwordHasher)
+    {
+        if (context.Users.Any())
+            return;
+
+        var user = new User { Username = "admin", PasswordHash = string.Empty };
+
+        user.PasswordHash = passwordHasher.HashPassword(user, "Senha@123");
+
+        context.Users.Add(user);
 
         context.SaveChanges();
     }

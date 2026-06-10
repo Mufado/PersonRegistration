@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PersonRegistration.Server.Dtos.V2;
 using PersonRegistration.Server.Mapping;
@@ -10,6 +11,7 @@ namespace PersonRegistration.Server.Controllers.V2;
 [ApiVersion("2.0")]
 [Route("api/v{version:apiVersion}/people")]
 [Produces("application/json")]
+[Authorize]
 public class PeopleController(IPersonService personService) : ControllerBase
 {
     private readonly IPersonService _personService = personService;

@@ -30,5 +30,23 @@ public class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider)
                     Version = description.ApiVersion.ToString()
                 });
         }
+
+        const string schemeId = "Bearer";
+
+        options.AddSecurityDefinition(schemeId, new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Description = "Cole o token JWT.",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT"
+        });
+
+        options.AddSecurityRequirement(document =>
+            new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecuritySchemeReference(schemeId, document)] = []
+            });
     }
 }

@@ -1,11 +1,16 @@
 using Asp.Versioning;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PersonRegistration.Server.Data;
 using PersonRegistration.Server.ExceptionHandling;
 using PersonRegistration.Server.Filters;
+using PersonRegistration.Server.Models;
 using PersonRegistration.Server.Services;
 using PersonRegistration.Server.Swagger;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,12 +48,35 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
+
+builder.Services.AddScoped<ITokenService, TokenService>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    DbSeeder.Seed(context);
+    var hasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher<User>>();
+    DbSeeder.Seed(context, hasher);
 }
 
 app.UseExceptionHandler();
@@ -73,6 +101,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
