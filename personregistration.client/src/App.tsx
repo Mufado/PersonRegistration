@@ -1,10 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 import { LoginPage } from "./pages/LoginPage";
+import { PeopleListPage } from "./pages/PeopleListPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-
-export function PeopleListPage() {
-    return 
-}
 
 export default function App() {
   return (
@@ -16,7 +13,7 @@ export default function App() {
           path="/"
           element={
             <ProtectedRoute>
-              <div>Placeholder</div>
+              <PeopleListPage />
             </ProtectedRoute>
           }
         />
