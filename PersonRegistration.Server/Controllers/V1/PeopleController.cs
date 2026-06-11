@@ -18,9 +18,10 @@ public class PeopleController(IPersonService personService) : ControllerBase
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<PersonResponse>>> GetAll(
-        CancellationToken cancellationToken)
+    [FromQuery] string? search,
+    CancellationToken cancellationToken)
     {
-        var people = await _personService.GetAllAsync(cancellationToken);
+        var people = await _personService.GetAllAsync(search, cancellationToken);
         return Ok(people.Select(p => p.ToV1Response()));
     }
 

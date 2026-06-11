@@ -10,10 +10,23 @@ public class PersonService(AppDbContext context) : IPersonService
 {
     private readonly AppDbContext _context = context;
 
-    public async Task<IEnumerable<Person>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Person>> GetAllAsync(string? search = null, CancellationToken cancellationToken = default)
     {
-        return await _context.People
-            .AsNoTracking()
+        var query = _context.People.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim().ToLower();
+
+            var digits = new string([.. term.Where(char.IsDigit)]);
+
+            query = query.Where(p =>
+                p.Name.Contains(term, StringComparison.CurrentCultureIgnoreCase) ||
+                (p.Email != null && p.Email.Contains(term, StringComparison.CurrentCultureIgnoreCase)) ||
+                (digits.Length > 0 && p.Cpf.Contains(digits)));
+        }
+
+        return await query
             .OrderBy(p => p.Name)
             .ToListAsync(cancellationToken);
     }
