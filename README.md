@@ -48,8 +48,8 @@ As escolhas abaixo priorizam **clareza e adequação ao escopo** — evitando ta
 ### Arquitetura do back-end
 
 - **Projeto único, organizado por pastas** (`Controllers`, `Services`, `Dtos`, `Validators`, `Data`, `Models`, `Mapping`, entre outras) em vez de Clean Architecture, a fim de priorizar simplicidade.
-- **Sem repository pattern sobre o EF Core.** O `DbContext` já é uma implementação de Unit of Work e cada `DbSet` já é um repositório; adicionar uma camada genérica por cima, num CRUD, seria redundância. Os serviços consomem o `DbContext` diretamente.
-- **DTOs separados das entidades e versionados** — o que permite que v1 e v2 compartilhem uma única entidade de domínio.
+- **Sem repository pattern sobre o EF Core.** O `DbContext` já é uma implementação de Unit of Work e cada `DbSet` já é um repositório.
+- **DTOs separados das entidades e versionados**.
 
 ### Validação
 
@@ -59,8 +59,7 @@ As escolhas abaixo priorizam **clareza e adequação ao escopo** — evitando ta
 ### Versionamento da API (v1 / v2)
 
 - **Versionamento por caminho na URL** (`/api/v1`, `/api/v2`).
-- **Uma única entidade** com endereço anulável. A diferença entre as versões vive nos **DTOs e controllers**, não no domínio nem no banco: a v2 torna o endereço obrigatório, a v1 simplesmente o ignora.
-- O front-end alterna entre v1 e v2 em tempo real.
+- **Uma única entidade** com endereço anulável. A diferença entre as versões vive nos **DTOs e controllers**, não no domínio nem no banco.
 
 ### Banco em memória
 
