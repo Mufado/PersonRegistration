@@ -4,6 +4,7 @@ import { useDebounce } from "../hooks/useDebounce";
 import { getPeople, deletePerson } from "../api/people";
 import type { Person } from "../types/person";
 import { PersonCard } from "../components/PersonCard";
+import { PersonForm } from "./PersonForm";
 
 export function PeopleListPage() {
   const { version, setVersion } = useApiVersion();
@@ -14,6 +15,9 @@ export function PeopleListPage() {
   const [people, setPeople] = useState<Person[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [formPerson, setFormPerson] = useState<Person | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0); 
 
   useEffect(() => {
     let cancelled = false;
@@ -26,7 +30,7 @@ export function PeopleListPage() {
       .finally(() => { if (!cancelled) setLoading(false); });
 
     return () => { cancelled = true; };
-  }, [version, debouncedSearch]);
+  }, [version, debouncedSearch, reloadKey]);
 
   async function handleDelete(id: number) {
     if (!confirm("Tem certeza que deseja excluir esta pessoa?")) return;
@@ -37,6 +41,21 @@ export function PeopleListPage() {
     } catch {
       alert("Erro ao excluir.");
     }
+  }
+
+  function openCreate() {
+    setFormPerson(null);
+    setIsFormOpen(true);
+  }
+
+  function openEdit(person: Person) {
+    setFormPerson(person);
+    setIsFormOpen(true);
+  }
+
+  function handleSaved() {
+    setIsFormOpen(false);
+    setReloadKey((k) => k + 1); 
   }
 
   return (
@@ -52,7 +71,7 @@ export function PeopleListPage() {
           <button className={version === "v2" ? "active" : ""} onClick={() => setVersion("v2")}>v2</button>
         </div>
 
-        <button className="new-button" >+ Novo cadastro</button>
+        <button className="new-button" onClick={openCreate} >+ Novo cadastro</button>
       </header>
 
       <input
@@ -71,11 +90,15 @@ export function PeopleListPage() {
           <PersonCard
             key={person.id}
             person={person}
-            onEdit={() => {}}
+            onEdit={() => openEdit(person)}
             onDelete={() => handleDelete(person.id)}
           />
         ))}
       </div>
+
+      {isFormOpen && (
+        <PersonForm person={formPerson} onClose={() => setIsFormOpen(false)} onSaved={handleSaved} />
+      )}
     </div>
   );
 }
