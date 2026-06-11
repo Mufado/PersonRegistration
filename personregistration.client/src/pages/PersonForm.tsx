@@ -3,125 +3,27 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useApiVersion } from "../context/ApiVersionContext";
 import { createPerson, updatePerson } from "../api/people";
-import type { Person, PersonRequest } from "../types/person";
-import type { UseFormRegisterReturn } from "react-hook-form";
-
-const SANITIZE = {
-  letters: /[^A-Za-zÀ-ÿ\s]/g,
-  uf: /[^A-Za-zÀ-ÿ]/g,
-  number: /[^0-9]/g,
-  cep: /[^0-9.\-]/g,
-  street: /[^A-Za-zÀ-ÿ0-9\s.,\-]/g,
-};
-
-interface PersonFormValues {
-  name: string; cpf: string; birthDate: string; birthSex: string; email: string;
-  birthPlace: string; nationality: string;
-  street: string; number: string; district: string; zipCode: string; city: string; state: string;
-}
+import type { Person, PersonRequest, PersonFormValues } from "../types/person";
+import { buildAddress, parseAddress, SANITIZE } from "../utils/address";
+import { formatDateTime } from "../utils/format";
+import { inputClass, restrict } from "../utils/formHelpers";
+import { Field, SectionTitle } from "../components/Field";
 
 const emptyValues: PersonFormValues = {
   name: "", cpf: "", birthDate: "", birthSex: "", email: "", birthPlace: "",
   nationality: "", street: "", number: "", district: "", zipCode: "", city: "", state: "",
 };
 
-const inputClass =
-  "w-full rounded-md border border-line bg-[#0a0f10] px-[13px] py-[11px] pr-9 font-mono text-sm text-ink outline-none placeholder:text-faint focus:border-grn2 focus:ring-2 focus:ring-grn/15";
+const addressFields = [
+  { name: "street" as const,   label: "Logradouro", span: "sm:col-span-2", sanitize: SANITIZE.street },
+  { name: "number" as const,   label: "Número",     span: "",              sanitize: SANITIZE.number },
+  { name: "district" as const, label: "Bairro",     span: "sm:col-span-2", sanitize: SANITIZE.letters },
+  { name: "zipCode" as const,  label: "CEP",        span: "",              sanitize: SANITIZE.cep },
+  { name: "city" as const,     label: "Cidade",     span: "sm:col-span-2", sanitize: SANITIZE.letters },
+  { name: "state" as const,    label: "UF",         span: "",              sanitize: SANITIZE.uf },
+];
 
-function formatDateTime(iso: string): string {
-  const d = new Date(iso);
-  return `${d.toLocaleDateString("pt-BR")} ${d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`;
-}
-
-function SectionTitle({ title, badge }: { title: string; badge?: string }) {
-  return (
-    <div className="mb-3.75 flex items-center gap-2.5">
-      <span className="font-mono text-[12.5px] font-semibold text-grn">{">"} {title}</span>
-      {badge && (
-        <span className="rounded border border-grn/40 bg-grn/12 px-2 py-0.5 font-mono text-[10px] text-grn">
-          {badge}
-        </span>
-      )}
-      <div className="h-px flex-1 bg-line" />
-    </div>
-  );
-}
-
-function Field({
-  label, required, hint, error, valid, children,
-}: {
-  label: string; required?: boolean; hint?: string; error?: string;
-  valid?: boolean; children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <div className="mb-1.75 flex gap-1.25 whitespace-nowrap font-mono text-[11px] uppercase tracking-wide text-mut">
-        {label}{required && <span className="text-grn">*</span>}
-      </div>
-      <div className="relative">
-        {children}
-        {valid && (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="absolute right-3 top-3.25 text-grn">
-            <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        )}
-      </div>
-      {error && <div className="mt-1.5 font-mono text-[10.5px] text-danger">{error}</div>}
-      {!error && hint && <div className="mt-1.5 font-mono text-[10.5px] text-faint">{hint}</div>}
-    </div>
-  );
-}
-
-
-function buildAddress(v: PersonFormValues): string {
-  return `${v.street}, ${v.number} - ${v.district}, ${v.city} - ${v.state}, ${v.zipCode}`;
-}
-
-function parseAddress(address: string | null): Partial<PersonFormValues> {
-  if (!address) return {};
-
-  let rest = address;
-
-  const cut = (sep: string): string | null => {
-    const idx = rest.lastIndexOf(sep);
-
-    if (idx === -1) return null;
-
-    const after = rest.slice(idx + sep.length);
-
-    rest = rest.slice(0, idx);
-
-    return after;
-  };
-
-  // The order matters, as the separators are used to split the string step by step.
-  // We start from the end (zip code) and move backwards to the street.
-  const zipCode = cut(", ");
-  const state = cut(" - ");
-  const city = cut(", ");
-  const district = cut(" - ");
-  const number = cut(", ");
-
-  if (zipCode === null || state === null || city === null || district === null || number === null) {
-    return { street: address };
-  }
-
-  return { street: rest, number, district, city, state, zipCode };
-}
-
-function restrict(reg: UseFormRegisterReturn, pattern: RegExp): UseFormRegisterReturn {
-  return {
-    ...reg,
-    onChange: (e: { target: HTMLInputElement; type?: string }) => {
-      e.target.value = e.target.value.replace(pattern, "");
-      return reg.onChange(e);
-    },
-  };
-}
-
-export function PersonForm({
-  person, onClose, onSaved,
-}: {
+export function PersonForm({ person, onClose, onSaved }: {
   person: Person | null; onClose: () => void; onSaved: () => void;
 }) {
   const { version } = useApiVersion();
@@ -148,43 +50,42 @@ export function PersonForm({
     );
   }, [person, reset]);
 
-  async function onSubmit(values: PersonFormValues) {
+  async function onSubmit(formValues: PersonFormValues) {
     const payload: PersonRequest = {
-      name: values.name, cpf: values.cpf, birthDate: values.birthDate,
-      birthSex: values.birthSex ? (values.birthSex as PersonRequest["birthSex"]) : null,
-      email: values.email || null,birthPlace: values.birthPlace || null,
-      nationality: values.nationality || null,
+      name: formValues.name, cpf: formValues.cpf, birthDate: formValues.birthDate,
+      birthSex: formValues.birthSex ? (formValues.birthSex as PersonRequest["birthSex"]) : null,
+      email: formValues.email || null, birthPlace: formValues.birthPlace || null,
+      nationality: formValues.nationality || null,
     };
-    
-    if (version === "v2") payload.address = buildAddress(values);
+
+    if (version === "v2") payload.address = buildAddress(formValues);
 
     try {
-      if (person) await updatePerson(version, person.id, payload);
-      else await createPerson(version, payload);
+      if (person) {
+        await updatePerson(version, person.id, payload)
+      } else {
+        await createPerson(version, payload)
+      };
+
       onSaved();
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 400) {
         const backendErrors = err.response.data?.errors as Record<string, string[]> | undefined;
+        
         if (backendErrors) {
           for (const [field, messages] of Object.entries(backendErrors)) {
             const key = field.charAt(0).toLowerCase() + field.slice(1);
+
             setError(key as keyof PersonFormValues, { message: messages[0] });
           }
+
           return;
         }
       }
+
       alert("Erro ao salvar. Verifique os dados.");
     }
   }
-
-  const addressFields = [
-    { name: "street" as const,   label: "Logradouro", span: "sm:col-span-2", sanitize: SANITIZE.street },
-    { name: "number" as const,   label: "Número",     span: "",              sanitize: SANITIZE.number },
-    { name: "district" as const, label: "Bairro",     span: "sm:col-span-2", sanitize: SANITIZE.letters },
-    { name: "zipCode" as const,  label: "CEP",        span: "",              sanitize: SANITIZE.cep },
-    { name: "city" as const,     label: "Cidade",     span: "sm:col-span-2", sanitize: SANITIZE.letters },
-    { name: "state" as const,    label: "UF",         span: "",              sanitize: SANITIZE.uf },
-  ];
 
   return (
     <div className="fixed inset-0 z-50">
@@ -200,10 +101,8 @@ export function PersonForm({
               {isEditing ? "Editar pessoa" : "Nova pessoa"}
             </h2>
           </div>
-          <button
-            type="button" onClick={onClose}
-            className="grid h-8 w-8 cursor-pointer place-items-center rounded-md border border-line bg-surf2 text-mut transition hover:border-grn2 hover:text-grn"
-          >
+          <button type="button" onClick={onClose}
+            className="grid h-8 w-8 cursor-pointer place-items-center rounded-md border border-line bg-surf2 text-mut transition hover:border-grn2 hover:text-grn">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
           </button>
         </div>
@@ -278,16 +177,12 @@ export function PersonForm({
           </div>
 
           <div className="flex justify-end gap-2.5 border-t border-line px-6.5 py-4">
-            <button
-              type="button" onClick={onClose}
-              className="cursor-pointer rounded-md border border-line bg-surf2 px-5 py-2.75 font-mono text-[13px] text-mut transition hover:text-ink"
-            >
+            <button type="button" onClick={onClose}
+              className="cursor-pointer rounded-md border border-line bg-surf2 px-5 py-2.75 font-mono text-[13px] text-mut transition hover:text-ink">
               cancelar
             </button>
-            <button
-              type="submit" disabled={isSubmitting}
-              className="cursor-pointer rounded-md bg-grn px-6 py-2.75 font-mono text-[13px] font-semibold text-[#06140d] transition hover:bg-grn2 disabled:opacity-60"
-            >
+            <button type="submit" disabled={isSubmitting}
+              className="cursor-pointer rounded-md bg-grn px-6 py-2.75 font-mono text-[13px] font-semibold text-[#06140d] transition hover:bg-grn2 disabled:opacity-60">
               {isSubmitting ? "SALVANDO…" : "SALVAR"}
             </button>
           </div>

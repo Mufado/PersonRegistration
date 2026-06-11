@@ -24,3 +24,19 @@ export interface PersonRequest {
   nationality: string | null;
   address?: string | null;
 }
+
+export interface PersonFormValues {
+  name: string;
+  cpf: string;
+  birthDate: string;
+  birthSex: string;
+  email: string;
+  birthPlace: string;
+  nationality: string;
+  street: string;
+  number: string;
+  district: string;
+  zipCode: string;
+  city: string;
+  state: string;
+}
