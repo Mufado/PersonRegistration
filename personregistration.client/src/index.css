@@ -21,7 +21,6 @@
 html, body, #root { height: 100%; }
 body { margin: 0; }
 
-/* Efeitos de fundo: complexos demais p/ utilitários, então CSS próprio */
 .app-bg {
   background-image:
     linear-gradient(var(--color-line) 1px, transparent 1px),
