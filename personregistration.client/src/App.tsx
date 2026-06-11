@@ -1,12 +1,28 @@
-import './App.css';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router";
+import { LoginPage } from "./pages/LoginPage";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
-function App() {
-    return (
-        <div>
-            <h1>Weather forecast</h1>
-            <p>This component demonstrates fetching data from the server.</p>
-        </div>
-    );
+export function PeopleListPage() {
+    return 
 }
 
-export default App;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <div>Placeholder</div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
