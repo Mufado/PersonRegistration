@@ -91,20 +91,18 @@ app.UseDefaultFiles();
 
 app.MapStaticAssets();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
+// Exposing Swagger since it's a test project,
+// but in production consider restricting access to it
+app.UseSwagger();
 
-    app.UseSwaggerUI(options =>
+app.UseSwaggerUI(options =>
+{
+    foreach (var description in app.DescribeApiVersions())
     {
-        foreach (var description in app.DescribeApiVersions())
-        {
-            options.SwaggerEndpoint(
-                $"/swagger/{description.GroupName}/swagger.json",
-                description.GroupName.ToUpperInvariant());
-        }
-    });
-}
+        options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
+            description.GroupName.ToUpperInvariant());
+    }
+});
 
 app.UseHttpsRedirection();
 
