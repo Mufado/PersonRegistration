@@ -74,7 +74,7 @@ export function PersonCard({
         <Row label="email" value={person.email} />
         <Row label="natural" value={person.birthPlace} />
         <Row label="nacional" value={person.nationality} />
-        {version === "v2" && <Row label="endereço" value={person.address} accent />}
+        {version === "v2" && <Row label="endereço" value={person.address} />}
       </div>
 
       <div className="mt-3.5 flex items-center justify-between border-t border-line pt-3">
