@@ -4,6 +4,9 @@ using V2 = PersonRegistration.Server.Dtos.V2;
 
 namespace PersonRegistration.Server.Mapping;
 
+// In a production-scale application, you might want to use a library like AutoMapper
+// to handle object mapping more efficiently and with less boilerplate code.
+
 public static class PersonMappingExtensions
 {
     public static Person ToEntity(this V1.PersonRequest request) => new()
