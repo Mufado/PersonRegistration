@@ -67,7 +67,7 @@ public class PersonService(AppDbContext context) : IPersonService
         existing.Name = incoming.Name;
         existing.Cpf = normalizedCpf;
         existing.BirthDate = incoming.BirthDate;
-        existing.Gender = incoming.Gender;
+        existing.BirthSex = incoming.BirthSex;
         existing.Email = incoming.Email;
         existing.BirthPlace = incoming.BirthPlace;
         existing.Nationality = incoming.Nationality;

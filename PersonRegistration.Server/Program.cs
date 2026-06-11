@@ -11,12 +11,18 @@ using PersonRegistration.Server.Models;
 using PersonRegistration.Server.Services;
 using PersonRegistration.Server.Swagger;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<ValidationActionFilter>();
+})
+.AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(
+        new JsonStringEnumConverter());
 });
 
 builder.Services.AddDbContext<AppDbContext>(options =>

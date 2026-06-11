@@ -1,4 +1,6 @@
-﻿namespace PersonRegistration.Server.Dtos.V2;
+﻿using PersonRegistration.Server.Models;
+
+namespace PersonRegistration.Server.Dtos.V2;
 
 public record PersonResponse
 {
@@ -6,11 +8,11 @@ public record PersonResponse
     public string Name { get; init; } = string.Empty;
     public string Cpf { get; init; } = string.Empty;
     public DateOnly BirthDate { get; init; }
-    public string? Gender { get; init; }
     public string? Email { get; init; }
     public string? BirthPlace { get; init; }
     public string? Nationality { get; init; }
     public string? Address { get; init; }
+    public BirthSex? BirthSex { get; init; }
     public DateTime CreatedAt { get; init; }
     public DateTime UpdatedAt { get; init; }
 }

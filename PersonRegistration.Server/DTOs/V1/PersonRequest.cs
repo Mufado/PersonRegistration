@@ -1,4 +1,6 @@
-﻿namespace PersonRegistration.Server.Dtos.V1;
+﻿using PersonRegistration.Server.Models;
+
+namespace PersonRegistration.Server.Dtos.V1;
 
 public class PersonRequest
 {
@@ -11,9 +13,10 @@ public class PersonRequest
 
     public string Name { get; set; } = string.Empty;
     public string Cpf { get; set; } = string.Empty;
-    public DateOnly? BirthDate { get; set; }
-    public string? Gender { get; set; }
     public string? Email { get; set; }
     public string? BirthPlace { get; set; }
     public string? Nationality { get; set; }
+    public DateOnly? BirthDate { get; set; }
+    public BirthSex? BirthSex { get; set; }
+
 }
