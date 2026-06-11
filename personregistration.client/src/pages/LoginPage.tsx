@@ -55,10 +55,10 @@ export function LoginPage() {
               <br />
               <span className="text-grn">com precisão de API.</span>
             </h1>
-            <p className="mt-5 max-w-[430px] text-base leading-relaxed text-mut">
+            <p className="mt-5 max-w-107.5 text-base leading-relaxed text-mut">
               CRUD completo, validação de CPF e datas, duas versões da API documentadas em Swagger com autenticação JWT inclusa.
             </p>
-            <div className="mt-7 max-w-[430px] rounded-lg border border-line bg-[#0a0f10] p-4">
+            <div className="mt-7 max-w-107.5 rounded-lg border border-line bg-[#0a0f10] p-4">
               <div className="mb-3 flex gap-2">
                 <span className="h-2.5 w-2.5 rounded-full bg-danger" />
                 <span className="h-2.5 w-2.5 rounded-full bg-amb" />
@@ -80,7 +80,7 @@ export function LoginPage() {
         </div>
 
         <div className="grid place-items-center p-10">
-          <div className="w-full max-w-[372px] rounded-lg border border-line bg-surf p-8">
+          <div className="w-full max-w-93 rounded-lg border border-line bg-surf p-8">
             <div className="mb-2 font-mono text-[11px] uppercase tracking-[0.16em] text-grn2">
               $ auth --login
             </div>
@@ -118,7 +118,7 @@ export function LoginPage() {
               </button>
 
               <div className="mt-4 flex items-center justify-center gap-2 font-mono text-[11px] text-faint">
-                <span className="h-[7px] w-[7px] rounded-full bg-grn shadow-[0_0_8px_var(--color-grn)]" />
+                <span className="h-1.75 w-1.75 rounded-full bg-grn shadow-[0_0_8px_var(--color-grn)]" />
                 token JWT · expira após 2 horas
               </div>
             </form>
