@@ -27,6 +27,6 @@ public class PersonRequestValidator : AbstractValidator<PersonRequest>
             .When(x => !string.IsNullOrWhiteSpace(x.Email));
 
         RuleFor(x => x.Address)
-            .NotEmpty().WithMessage("O endereço é obrigatório na versão 2.");
+            .NotEmpty().WithMessage("O endereço é obrigatório.");
     }
 }
