@@ -37,6 +37,7 @@ dotnet run --project PersonRegistration.Server
 ## Stack
 
 **Back-end:** .NET 10 · ASP.NET Core Web API · EF Core (InMemory) · FluentValidation · Asp.Versioning · JWT Bearer · Swashbuckle (Swagger)
+
 **Front-end:** React 19 · TypeScript · Vite · Tailwind CSS v4 · react-hook-form · react-router v7 · axios
 
 ---
