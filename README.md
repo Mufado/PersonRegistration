@@ -1,6 +1,6 @@
 # Cadastro de Pessoas
 
-API REST em **.NET 10** + SPA em **React**, com versionamento de API, autenticação JWT, documentação Swagger e deploy em nuvem (testes automatizados em breve).
+API REST em **.NET 10** + SPA em **React**, com versionamento de API, autenticação JWT, testes automatizados, documentação Swagger e deploy em nuvem.
 
 ---
 
@@ -12,7 +12,7 @@ API REST em **.NET 10** + SPA em **React**, com versionamento de API, autentica�
 | 📖 **Swagger** | https://ggpersonregistration.azurewebsites.net/swagger |
 | 👤 **Login** | `admin` / `Senha@123` |
 
-> A aplicação roda no tier gratuito do Azure (F1). O serviço hiberna após inatividade, então a **primeira requisição pode levar alguns segundos**. Como o banco é em memória, os dados **reiniciam com os registros semeados** a cada restart do app.
+> A aplicação roda no tier _Standard_ do Azure (S1). O app possui créditos disponíveis para durar até cerca da metade do próximo mês (07/2026). Após esse período, a aplicação será migrada para o tier gratuito, onde o serviço hiberna após certo tempo de inatividade (a primeira requisição enviada quando o app "acorda" tende a demorar mais que as outras). Como o banco é em memória, os dados **reiniciam com os registros semeados** a cada restart do app.
 
 ---
 
@@ -66,6 +66,10 @@ As escolhas abaixo priorizam **clareza e adequação ao escopo** — evitando ta
 
 - Implementado com o provider InMemory do EF Core.
 
+### Testes automatizados
+
+- Utilizado **banco em memória no lugar de mock** de banco de dados, priorizando simplicidade (e, nesse caso, tornando o teste mais fidedigno com a aplicação real)
+
 ### Outras decisões de back-end
 
 - **Mapeamento DTO ↔ entidade manual** (métodos de extensão), sem AutoMapper para poucas conversões.
@@ -95,15 +99,14 @@ As escolhas abaixo priorizam **clareza e adequação ao escopo** — evitando ta
 - ✅ **Versão 2 da API** com endereço obrigatório
 - ✅ **Autenticação e autorização** via JWT (acesso restrito a usuários pré-cadastrados)
 - ✅ **Deploy em nuvem** (Azure App Service)
-- ⌚ **Testes automatizados** em desenvolvimento
+- ✅ **Testes automatizados** utilizando xUnit v3
 
 ---
 
 ## Limitações conhecidas e próximos passos
 
-Trade-offs conscientes, adequados ao escopo de um desafio técnico:
-
-- Finalizar **Testes automatizados** em XUnit (último extra).
+- **Formatação e validação de inputs** no frontend para deixar a UX mais confortável.
+- **Mapear erros retornados para o frontend**, de forma que sejam mais autoexplicativos para o usuário.
 - **Token no `localStorage`:** prático para o escopo, mas vulnerável a XSS.
 - **Chave JWT no `appsettings`:** em produção, iria para variáveis de ambiente / secret manager.
 - **Revisão de códigos gerados por IA**: verificar possíveis locais de falhas em aspectos como seguir boas práticas e erros lógicos.
