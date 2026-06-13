@@ -109,4 +109,3 @@ As escolhas abaixo priorizam **clareza e adequação ao escopo** — evitando ta
 - **Mapear erros retornados para o frontend**, de forma que sejam mais autoexplicativos para o usuário.
 - **Token no `localStorage`:** prático para o escopo, mas vulnerável a XSS.
 - **Chave JWT no `appsettings`:** em produção, iria para variáveis de ambiente / secret manager.
-- **Revisão de códigos gerados por IA**: verificar possíveis locais de falhas em aspectos como seguir boas práticas e erros lógicos.
