@@ -18,5 +18,4 @@ public class PersonRequest
     public string? Nationality { get; set; }
     public DateOnly? BirthDate { get; set; }
     public BirthSex? BirthSex { get; set; }
-
 }

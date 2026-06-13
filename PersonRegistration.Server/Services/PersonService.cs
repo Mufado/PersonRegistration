@@ -51,7 +51,7 @@ public class PersonService(AppDbContext context) : IPersonService
         var now = DateTime.UtcNow;
 
         person.CreatedAt = now;
-        
+
         person.UpdatedAt = now;
 
         _context.People.Add(person);

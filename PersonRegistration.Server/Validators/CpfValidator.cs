@@ -2,7 +2,6 @@
 
 public static class CpfValidator
 {
-
     public static bool IsValid(string? cpf)
     {
         if (string.IsNullOrWhiteSpace(cpf))
