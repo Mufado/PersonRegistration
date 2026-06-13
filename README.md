@@ -20,7 +20,7 @@ API REST em **.NET 10** + SPA em **React**, com versionamento de API, autentica�
 
 **Pré-requisitos:** .NET 10 SDK · Node.js 20+
 
-Abra `PersonRegistration.sln` no Visual Studio 2026 e pressione **F5**. O projeto `.Server` é o ponto de entrada e inicia o front-end automaticamente (via SPA proxy); a API atende em `/api`.
+Abra `PersonRegistration.slnx` no Visual Studio 2026 e pressione **F5**. O projeto `.Server` é o ponto de entrada e inicia o front-end automaticamente (via SPA proxy); a API atende em `/api`.
 
 Pela linha de comando:
 
