@@ -36,7 +36,7 @@ public class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider)
         options.AddSecurityDefinition(schemeId, new OpenApiSecurityScheme
         {
             Name = "Authorization",
-            Description = "Cole o token JWT.",
+            Description = "Insert JWT.",
             In = ParameterLocation.Header,
             Type = SecuritySchemeType.Http,
             Scheme = "bearer",

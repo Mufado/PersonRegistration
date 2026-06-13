@@ -26,7 +26,7 @@ export function useApiVersion() {
   const context = useContext(ApiVersionContext);
 
   if (context === undefined) {
-    throw new Error("useApiVersion deve ser usado dentro de ApiVersionProvider");
+    throw new Error("useApiVersion must be used inside an ApiVersionProvider");
   }
   
   return context;

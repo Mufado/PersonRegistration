@@ -20,7 +20,7 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
         };
 
         if (status == StatusCodes.Status500InternalServerError)
-            _logger.LogError(exception, "Erro não tratado na requisição.");
+            _logger.LogError(exception, "Unhandled error in the request.");
 
         var problem = new ProblemDetails
         {
