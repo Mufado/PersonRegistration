@@ -1,34 +1,34 @@
-# Cadastro de Pessoas
+# Person Registration
 
-API REST em **.NET 10** + SPA em **React**, com versionamento de API, autenticação JWT, testes automatizados, documentação Swagger e deploy em nuvem.
+REST API in **.NET 10** + SPA in **React**, with API versioning, JWT authentication, automated testing, Swagger documentation, and cloud deployment.
 
 ---
 
-## Acesso
+## Access
 
 | | |
 |---|---|
-| 🔗 **Aplicação** | https://ggpersonregistration.azurewebsites.net/ |
+| 🔗 **Application** | https://ggpersonregistration.azurewebsites.net/ |
 | 📖 **Swagger** | https://ggpersonregistration.azurewebsites.net/swagger |
 | 👤 **Login** | `admin` / `Senha@123` |
 
-> A aplicação roda no tier _Standard_ do Azure (S1). O app possui créditos disponíveis para durar até cerca da metade do próximo mês (07/2026). Após esse período, a aplicação será migrada para o tier gratuito, onde o serviço hiberna após certo tempo de inatividade (a primeira requisição enviada quando o app "acorda" tende a demorar mais que as outras). Como o banco é em memória, os dados **reiniciam com os registros semeados** a cada restart do app.
+> The application runs on Azure's free tier, where the service hibernates after a certain period of inactivity (the first request sent when the app "wakes up" tends to take longer than the others). Since the database is in-memory, the data **resets to the seeded records** on every app restart.
 
 ---
 
-## Rodando localmente
+## Running locally
 
-**Pré-requisitos:** .NET 10 SDK · Node.js 20+
+**Prerequisites:** .NET 10 SDK · Node.js 20+
 
-Abra `PersonRegistration.slnx` no Visual Studio 2026 e pressione **F5**. O projeto `.Server` é o ponto de entrada e inicia o front-end automaticamente (via SPA proxy); a API atende em `/api`.
+Open `PersonRegistration.slnx` in Visual Studio 2026 and press **F5**. The `.Server` project is the entry point and automatically starts the front-end (via the SPA proxy); the API is served at `/api`.
 
-Pela linha de comando:
+From the command line:
 
 ```bash
-# garanta as dependências do front uma vez
+# ensure front-end dependencies once
 cd personregistration.client && npm install && cd ..
 
-# rode a aplicação (sobe API + front em modo dev)
+# run the application (spins up API + front-end in dev mode)
 dotnet run --project PersonRegistration.Server
 ```
 
@@ -42,70 +42,70 @@ dotnet run --project PersonRegistration.Server
 
 ---
 
-## Decisões técnicas
+## Technical decisions
 
-As escolhas abaixo priorizam **clareza e adequação ao escopo** — evitando tanto a ausência de estrutura quanto a sobre-engenharia.
+The choices below prioritize **clarity and fit for scope** — avoiding both a lack of structure and over-engineering.
 
-### Arquitetura do back-end
+### Back-end architecture
 
-- **Projeto único, organizado por pastas** (`Controllers`, `Services`, `Dtos`, `Validators`, `Data`, `Models`, `Mapping`, entre outras) em vez de Clean Architecture, a fim de priorizar simplicidade.
-- **Sem repository pattern sobre o EF Core.** O `DbContext` já é uma implementação de Unit of Work e cada `DbSet` já é um repositório.
-- **DTOs separados das entidades e versionados**.
+- **Single project, organized by folders** (`Controllers`, `Services`, `Dtos`, `Validators`, `Data`, `Models`, `Mapping`, among others) instead of Clean Architecture, in order to prioritize simplicity.
+- **No repository pattern on top of EF Core.** The `DbContext` is already a Unit of Work implementation, and each `DbSet` is already a repository.
+- **DTOs separated from entities and versioned**.
 
-### Validação
+### Validation
 
-- **FluentValidation** para regras de formato, mantendo os validadores isolados e testáveis.
-- **Divisão por natureza da regra:** validação sem I/O (formato de CPF, e-mail, data de nascimento) fica nos validadores; validação que depende do banco (**unicidade do CPF**) fica na camada de serviço.
+- **FluentValidation** for format rules, keeping validators isolated and testable.
+- **Split by nature of the rule:** validation without I/O (CPF format, email, date of birth) lives in the validators; validation that depends on the database (**CPF uniqueness**) lives in the service layer.
 
-### Versionamento da API (v1 / v2)
+### API versioning (v1 / v2)
 
-- **Versionamento por caminho na URL** (`/api/v1`, `/api/v2`).
-- **Uma única entidade** com endereço anulável. A diferença entre as versões vive nos **DTOs e controllers**, não no domínio nem no banco.
+- **URL path–based versioning** (`/api/v1`, `/api/v2`).
+- **A single entity** with a nullable address. The difference between versions lives in the **DTOs and controllers**, not in the domain or the database.
 
-### Banco em memória
+### In-memory database
 
-- Implementado com o provider InMemory do EF Core.
+- Implemented with EF Core's InMemory provider.
 
-### Testes automatizados
+### Automated testing
 
-- Utilizado **banco em memória no lugar de mock** de banco de dados, priorizando simplicidade (e, nesse caso, tornando o teste mais fidedigno com a aplicação real)
+- Used an **in-memory database instead of mocking** the database, prioritizing simplicity (and, in this case, making the test more faithful to the real application).
 
-### Outras decisões de back-end
+### Other back-end decisions
 
-- **Mapeamento DTO ↔ entidade manual** (métodos de extensão), sem AutoMapper para poucas conversões.
-- **Tratamento global de exceções** via `IExceptionHandler`.
-- **JWT** gerado com `JsonWebTokenHandler`, senhas com hash via `PasswordHasher`.
-- **Configuração de schema** isolada em `IEntityTypeConfiguration`.
+- **Manual DTO ↔ entity mapping** (extension methods), without AutoMapper for a small number of conversions.
+- **Global exception handling** via `IExceptionHandler`.
+- **JWT** generated with `JsonWebTokenHandler`, passwords hashed via `PasswordHasher`.
+- **Schema configuration** isolated in `IEntityTypeConfiguration`.
 
 ### Front-end
 
-- **axios com interceptors:** o token é injetado automaticamente em toda requisição e o `401` é tratado de forma centralizada.
-- **react-hook-form** no formulário, com os erros de validação do back-end (400) mapeados de volta para os campos correspondentes.
-- **Endereço:** o formulário coleta seis campos (logradouro, número, bairro, CEP, cidade, UF) que são concatenados em uma única string para a API e parseados de volta na edição.
-- **Busca server-side** por nome, CPF ou e-mail, com debounce e normalização do CPF.
-- **Estado** gerido com `useState` / `useContext` (autenticação e versão da API) — sem Redux, considerei como desnecessário neste escopo.
+- **axios with interceptors:** the token is automatically injected into every request, and `401` responses are handled centrally.
+- **react-hook-form** for the form, with back-end validation errors (400) mapped back to the corresponding fields.
+- **Address:** the form collects six fields (street, number, neighborhood, ZIP code, city, state) which are concatenated into a single string for the API and parsed back out during editing.
+- **Server-side search** by name, CPF, or email, with debounce and CPF normalization.
+- **State** managed with `useState` / `useContext` (authentication and API version) — no Redux, which I considered unnecessary for this scope.
 
-### Deploy
+### Deployment
 
-- **Artefato único:** o build do React é servido pelo próprio app .NET, no mesmo domínio. Isso **elimina CORS** e reduz o deploy a um só serviço.
-- Hospedado no **Azure App Service**, publicado a partir do Visual Studio.
-
----
-
-## Extras implementados
-
-- ✅ **Documentação da API** com Swagger (com seletor de versão v1 / v2)
-- ✅ **Banco de dados em memória** (EF Core InMemory)
-- ✅ **Versão 2 da API** com endereço obrigatório
-- ✅ **Autenticação e autorização** via JWT (acesso restrito a usuários pré-cadastrados)
-- ✅ **Deploy em nuvem** (Azure App Service)
-- ✅ **Testes automatizados** utilizando xUnit v3
+- **Single artifact:** the React build is served by the .NET app itself, on the same domain. This **eliminates CORS** and reduces deployment to a single service.
+- Hosted on **Azure App Service**, published from Visual Studio.
 
 ---
 
-## Limitações conhecidas e próximos passos
+## Extras implemented
 
-- **Formatação e validação de inputs** no frontend para deixar a UX mais confortável.
-- **Mapear erros retornados para o frontend**, de forma que sejam mais autoexplicativos para o usuário.
-- **Token no `localStorage`:** prático para o escopo, mas vulnerável a XSS.
-- **Chave JWT no `appsettings`:** em produção, iria para variáveis de ambiente / secret manager.
+- ✅ **API documentation** with Swagger (with a v1 / v2 version selector)
+- ✅ **In-memory database** (EF Core InMemory)
+- ✅ **API version 2** with a required address
+- ✅ **Authentication and authorization** via JWT (access restricted to pre-registered users)
+- ✅ **Cloud deployment** (Azure App Service)
+- ✅ **Automated testing** using xUnit v3
+
+---
+
+## Known limitations and next steps
+
+- **Input formatting and validation** on the front-end for a more comfortable UX.
+- **Mapping returned errors to the front-end** so they're more self-explanatory for the user.
+- **Token in `localStorage`:** practical for this scope, but vulnerable to XSS.
+- **JWT key in `appsettings`:** in production, it would go to environment variables / a secrets manager.
