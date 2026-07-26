@@ -8,8 +8,8 @@ REST API in **.NET 10** + SPA in **React**, with API versioning, JWT authenticat
 
 | | |
 |---|---|
-| 🔗 **Application** | https://ggpersonregistration.azurewebsites.net/ |
-| 📖 **Swagger** | https://ggpersonregistration.azurewebsites.net/swagger |
+| 🔗 **Application** | https://personregistration-dthtd7b8g4dpfjf7.westus2-01.azurewebsites.net/ |
+| 📖 **Swagger** | https://personregistration-dthtd7b8g4dpfjf7.westus2-01.azurewebsites.net/swagger |
 | 👤 **Login** | `admin` / `Senha@123` |
 
 > The application runs on Azure's free tier, where the service hibernates after a certain period of inactivity (the first request sent when the app "wakes up" tends to take longer than the others). Since the database is in-memory, the data **resets to the seeded records** on every app restart.
